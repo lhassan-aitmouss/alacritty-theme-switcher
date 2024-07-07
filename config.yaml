@@ -1,0 +1,11 @@
+# Configuration for Alacritty Theme Switcher
+
+# Path to Alacritty configuration file
+alacritty_conf_file: "/Users/hassan/.config/alacritty/alacritty.toml"
+
+# Path to Alacritty themes directory
+themes_dir: "/Users/hassan/.config/alacritty/themes/themes"
+
+# Additional settings (for future use)
+# preview_enabled: true
+# custom_themes_dir: "/Users/hassan/.config/alacritty/custom_themes"
