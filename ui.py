@@ -70,13 +70,13 @@ class ConfigDialog(QDialog):
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("About Alacritty Theme Changer")
+        self.setWindowTitle("About Alacritty Theme Switcher")
         self.setFixedSize(480, 200)
 
         layout = QVBoxLayout()
         
         about_text = """
-        <h2>Alacritty Theme Changer</h2>
+        <h2>Alacritty Theme Switcher</h2>
         <p>A simple GUI application to change Alacritty themes.</p>
         <p>GitHub: <a href="https://github.com/lhassan-aitmouss/alacritty-theme-switcher">
         https://github.com/lhassan-aitmouss/alacritty-theme-switcher</a></p>
@@ -99,7 +99,7 @@ class MainWindow(QMainWindow):
         self.init_ui()
     
     def init_ui(self):
-        self.setWindowTitle("Alacritty Theme Changer")
+        self.setWindowTitle("Alacritty Theme Switcher")
         self.setGeometry(100, 100, 800, 600)
         self.setWindowIcon(QIcon('icon.png'))
         self.center()
