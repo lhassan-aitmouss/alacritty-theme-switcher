@@ -1,8 +1,95 @@
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-                             QListWidget, QPushButton, QLabel, QLineEdit, QMessageBox, QApplication)
-from PyQt6.QtGui import QFont, QKeyEvent
+                             QListWidget, QPushButton, QLabel, QLineEdit, QDialog, QFileDialog, QApplication)
+from PyQt6.QtGui import QFont, QKeyEvent, QIcon, QScreen
 from PyQt6.QtCore import Qt
 from utils import restart_alacritty
+
+class ConfigDialog(QDialog):
+    def __init__(self, config_manager):
+        super().__init__()
+        self.config_manager = config_manager
+        self.init_ui()
+
+    def init_ui(self):
+        self.setWindowTitle("Settingss")
+        self.setFixedSize(640, 200)
+        self.setWindowIcon(QIcon('atc.png'))
+
+        layout = QVBoxLayout()
+
+        # Alacritty config file
+        config_layout = QHBoxLayout()
+        config_layout.addWidget(QLabel("Alacritty config file:"))
+        self.config_input = QLineEdit(self.config_manager.get_alacritty_conf_file())
+        config_layout.addWidget(self.config_input)
+        config_button = QPushButton("Browse")
+        config_button.clicked.connect(self.browse_config)
+        config_layout.addWidget(config_button)
+        layout.addLayout(config_layout)
+
+        # Themes directory
+        themes_layout = QHBoxLayout()
+        themes_layout.addWidget(QLabel("Themes directory:"))
+        self.themes_input = QLineEdit(self.config_manager.get_themes_dir())
+        themes_layout.addWidget(self.themes_input)
+        themes_button = QPushButton("Browse")
+        themes_button.clicked.connect(self.browse_themes)
+        themes_layout.addWidget(themes_button)
+        layout.addLayout(themes_layout)
+
+        # Save and Cancel buttons
+        button_layout = QHBoxLayout()
+        save_button = QPushButton("Save")
+        save_button.clicked.connect(self.save_config)
+        button_layout.addWidget(save_button)
+        cancel_button = QPushButton("Cancel")
+        cancel_button.clicked.connect(self.reject)
+        button_layout.addWidget(cancel_button)
+        layout.addLayout(button_layout)
+
+        self.setLayout(layout)
+
+    def browse_config(self):
+        file_name, _ = QFileDialog.getOpenFileName(self, "Select Alacritty config file", "", "TOML Files (*.toml)")
+        if file_name:
+            self.config_input.setText(file_name)
+
+    def browse_themes(self):
+        dir_name = QFileDialog.getExistingDirectory(self, "Select Themes Directory")
+        if dir_name:
+            self.themes_input.setText(dir_name)
+
+    def save_config(self):
+        self.config_manager.update_config(
+            self.config_input.text(),
+            self.themes_input.text()
+        )
+        self.accept()
+
+
+class AboutDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("About Alacritty Theme Changer")
+        self.setFixedSize(480, 200)
+
+        layout = QVBoxLayout()
+        
+        about_text = """
+        <h2>Alacritty Theme Changer</h2>
+        <p>A simple GUI application to change Alacritty themes.</p>
+        <p>GitHub: <a href="https://github.com/lhassan-aitmouss/alacritty-theme-switcher">
+        https://github.com/lhassan-aitmouss/alacritty-theme-switcher</a></p>
+        <p>Created by Lhassan Ait Mouss</p>
+        """
+        
+        label = QLabel(about_text)
+        label.setOpenExternalLinks(True)
+        label.setTextFormat(Qt.TextFormat.RichText)
+        label.setWordWrap(True)
+        
+        layout.addWidget(label)
+        self.setLayout(layout)
 
 class MainWindow(QMainWindow):
     def __init__(self, config_manager, theme_manager):
@@ -14,7 +101,9 @@ class MainWindow(QMainWindow):
     def init_ui(self):
         self.setWindowTitle("Alacritty Theme Changer")
         self.setGeometry(100, 100, 800, 600)
-        
+        self.setWindowIcon(QIcon('icon.png'))
+        self.center()
+
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
@@ -41,6 +130,10 @@ class MainWindow(QMainWindow):
         
         button_layout = QHBoxLayout()
         
+        settings_button = QPushButton("Settings")
+        settings_button.clicked.connect(self.show_settings)
+        button_layout.addWidget(settings_button)
+
         apply_button = QPushButton("Apply Theme")
         apply_button.clicked.connect(self.apply_theme)
         button_layout.addWidget(apply_button)
@@ -63,15 +156,25 @@ class MainWindow(QMainWindow):
         
         self.update_current_theme()
     
+    def show_settings(self):
+        dialog = ConfigDialog(self.config_manager)
+        if dialog.exec():
+            # Reload themes if settings were changed
+            self.theme_list.clear()
+            themes = sorted(self.theme_manager.get_themes())
+            self.theme_list.addItems(themes)
+            self.update_current_theme()
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
     def show_about(self):
-        about_text = """
-        Alacritty Theme Changer
-        
-        A simple GUI application to change Alacritty themes.
-        GitHub: https://github.com/lhassan-aitmouss/alacritty-theme-switcher
-        Created by Lhassan Ait Mouss
-        """
-        QMessageBox.about(self, "About", about_text)
+        dialog = AboutDialog(self)
+        dialog.exec()
+
     
     def apply_theme(self):
         selected_theme = self.theme_list.currentItem().text()
