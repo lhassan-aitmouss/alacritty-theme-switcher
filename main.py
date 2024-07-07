@@ -2,6 +2,7 @@ import sys
 import os
 import yaml
 import subprocess
+import re
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QListWidget, QPushButton, QLabel)
 from PyQt6.QtGui import QIcon, QFont
@@ -29,11 +30,20 @@ class ThemeManager:
         theme_path = os.path.join(self.themes_dir, selected_theme)
         with open(alacritty_conf_file, 'r') as file:
             config = file.read()
-        
-        new_config = config.replace('import = [', f'import = ["{theme_path}",')
-        
+
+        # Recherche la ligne d'import existante
+        import_line = re.search(r'import\s*=\s*\[(.*?)\]', config, re.DOTALL)
+        if import_line:
+            # Remplace l'ancien thème par le nouveau
+            new_import = f'import = ["{theme_path}"]'
+            config = config.replace(import_line.group(0), new_import)
+        else:
+            # Si aucune ligne d'import n'existe, ajoutez-en une nouvelle
+            config += f'\nimport = ["{theme_path}"]'
+
         with open(alacritty_conf_file, 'w') as file:
-            file.write(new_config)
+            file.write(config)
+
 
 class AlacrittyRestarter:
     @staticmethod
