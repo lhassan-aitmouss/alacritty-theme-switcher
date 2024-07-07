@@ -28,9 +28,20 @@ conda activate pyqt6
 3. Install dependencies:
 pip install -r requirements.txt
 
-## Config
+## Configuration
 
-Edit `config.yaml` to set the correct paths for your Alacritty config and themes folder.
+1. Copy `config.yaml.example` to `config.yaml`
+2. Edit `config.yaml` with your specific paths:
+   - `alacritty_conf_file`: Path to your Alacritty configuration file
+   - `themes_dir`: Path to your Alacritty themes directory
+
+## Tested Environment
+
+This application has been tested on:
+- MacBook Pro M1 (Sonoma 14.5)
+- Alacritty Version 0.13.2 (bb8ea18)
+
+Please note that while it should work on other systems, some adjustments might be necessary.
 
 ## Usage
 

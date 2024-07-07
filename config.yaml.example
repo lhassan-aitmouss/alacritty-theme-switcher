@@ -1,0 +1,2 @@
+alacritty_conf_file: "/path/to/your/alacritty.toml"
+themes_dir: "/path/to/your/alacritty/themes"
