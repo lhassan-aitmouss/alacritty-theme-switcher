@@ -38,7 +38,7 @@ pip install -r requirements.txt
 ## Tested Environment
 
 This application has been tested on:
-- MacBook Pro M1
+- MacBook Pro M1 (Sonoma 14.5)
 - Alacritty Version 0.13.2 (bb8ea18)
 
 Please note that while it should work on other systems, some adjustments might be necessary.
